@@ -6,11 +6,12 @@ from wtforms.validators import DataRequired, Length, URL
 class GroceryStoreForm(FlaskForm):
     """Form for adding/updating a GroceryStore."""
 
-    # TODO: Add the following fields to the form class:
+    title = StringField('Grocery Store Title', validators=[DataRequired()])
+    address = StringField('Grocery Store Address', validators=[DataRequired()])
+    submit = SubmitField('Submit')
     # - title - StringField
     # - address - StringField
     # - submit button
-    pass
 
 class GroceryItemForm(FlaskForm):
     """Form for adding/updating a GroceryItem."""
