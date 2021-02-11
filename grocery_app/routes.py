@@ -1,7 +1,7 @@
 from flask import Blueprint, request, render_template, redirect, url_for, flash
 from datetime import date, datetime
 from grocery_app.models import GroceryStore, GroceryItem
-from grocery_app.forms import GroceryStoreForm
+from grocery_app.forms import GroceryStoreForm, GroceryItemForm
 
 # Import app and db from events_app package so that we can run app
 from grocery_app import app, db
@@ -38,15 +38,24 @@ def new_store():
 
 @main.route('/new_item', methods=['GET', 'POST'])
 def new_item():
-    # TODO: Create a GroceryItemForm
+    # Creates a GroceryItemForm
+    form = GroceryItemForm()
 
-    # TODO: If form was submitted and was valid:
-    # - create a new GroceryItem object and save it to the database,
-    # - flash a success message, and
-    # - redirect the user to the item detail page.
+    # If form was submitted and was valid:
+    if form.validate_on_submit():
+        new_item = GroceryItem(
+            name=form.name.data,
+            price=form.price.data,
+            category=form.category.data,
+            photo_url=form.photo_url.data,
+            store=form.store.data
+        )
+        db.session.add(new_item)
+        db.session.commit()
 
-    # TODO: Send the form to the template and use it to render the form fields
-    return render_template('new_item.html')
+        flash('New item was added successfully.')
+        return redirect(url_for('main.item_detail', item_id=new_item.id))
+    return render_template('new_item.html', form=form)
 
 @main.route('/store/<store_id>', methods=['GET', 'POST'])
 def store_detail(store_id):
@@ -68,14 +77,16 @@ def store_detail(store_id):
 @main.route('/item/<item_id>', methods=['GET', 'POST'])
 def item_detail(item_id):
     item = GroceryItem.query.get(item_id)
-    # TODO: Create a GroceryItemForm and pass in `obj=item`
+    form = GroceryItemForm(obj=item)
 
-    # TODO: If form was submitted and was valid:
-    # - update the GroceryItem object and save it to the database,
-    # - flash a success message, and
-    # - redirect the user to the item detail page.
+    # If form was submitted and was valid:
+    if form.validate_on_submit():
+        form.populate_obj(item)
+        db.session.add(item)
+        db.session.commit()
 
-    # TODO: Send the form to the template and use it to render the form fields
+        flash('Item was edited successfully.')
+        return redirect(url_for('main.item_detail', item_id=item.id))
     item = GroceryItem.query.get(item_id)
-    return render_template('item_detail.html', item=item)
+    return render_template('item_detail.html', item=item, form=form)
 
