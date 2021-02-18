@@ -1,5 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
+from flask_bycrypt import Bcrypt
 from grocery_app.config import Config
 import os
 
@@ -8,6 +10,26 @@ app.config.from_object(Config)
 app.secret_key = os.urandom(24)
 
 db = SQLAlchemy(app)
+
+###########################
+# Authentication
+###########################
+
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login'
+login_manager.init_app(app)
+
+from .models import User
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+bcrypt = Bcrypt(app)
+
+###########################
+# Blueprints
+###########################
 
 from grocery_app.routes import main
 
