@@ -21,6 +21,7 @@ def homepage():
     return render_template('home.html', all_stores=all_stores)
 
 @main.route('/new_store', methods=['GET', 'POST'])
+@login_required
 def new_store():
     # Creates a GroceryStoreForm
     form = GroceryStoreForm()
@@ -29,7 +30,8 @@ def new_store():
     if form.validate_on_submit():
         new_store = GroceryStore(
             title=form.title.data,
-            address=form.address.data
+            address=form.address.data,
+            created_by=current_user
         )
         db.session.add(new_store)
         db.session.commit()
@@ -39,6 +41,7 @@ def new_store():
     return render_template('new_store.html', form=form)
 
 @main.route('/new_item', methods=['GET', 'POST'])
+@login_required
 def new_item():
     # Creates a GroceryItemForm
     form = GroceryItemForm()
@@ -50,7 +53,8 @@ def new_item():
             price=form.price.data,
             category=form.category.data,
             photo_url=form.photo_url.data,
-            store=form.store.data
+            store=form.store.data,
+            created_by=current_user
         )
         db.session.add(new_item)
         db.session.commit()
@@ -60,6 +64,7 @@ def new_item():
     return render_template('new_item.html', form=form)
 
 @main.route('/store/<store_id>', methods=['GET', 'POST'])
+@login_required
 def store_detail(store_id):
     store = GroceryStore.query.get(store_id)
     form = GroceryStoreForm(obj=store)
@@ -77,6 +82,7 @@ def store_detail(store_id):
     return render_template('store_detail.html', store=store, form=form)
 
 @main.route('/item/<item_id>', methods=['GET', 'POST'])
+@login_required
 def item_detail(item_id):
     item = GroceryItem.query.get(item_id)
     form = GroceryItemForm(obj=item)

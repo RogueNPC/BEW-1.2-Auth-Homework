@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<h1>Created by - {{ item.created_by.username }}</h1>
+
 <h1>Item - {{ item.name }}</h1>
 
 <p><img src="{{ item.photo_url }}" width="250px" height="250px"></p>
