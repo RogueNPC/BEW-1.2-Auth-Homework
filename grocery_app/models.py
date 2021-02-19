@@ -42,3 +42,10 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), nullable=False, unique=True)
     password = db.Column(db.String(200), nullable=False)
+    shopping_list_items = db.relationship(
+        'GroceryItem', secondary='user_item', back_populates='created_by')
+
+shopping_list_table = db.Table('user_item',
+    db.Column('grocery_item_id', db.Integer, db.ForeignKey('grocery_item.id')),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
+)
